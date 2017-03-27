@@ -193,8 +193,8 @@ xx = np.dot(hourssleep.reshape(100,1), np.ones((1,100))).T
 CS = plt.contour(xx,yy,100*allOutputs.reshape(100,100))
 plt.xlabel('Hours Sleep')
 plt.ylabel('Hours Study')
-
-xxx = np.array(([10,2]), dtype=float)
+xxx = x
+#xxx = np.array(([10,2]), dtype=float)
 xxx = xxx/np.amax(xxx, axis=0)
 print('for 3 and 5')
 print(NN.forward(xxx)*100)
