@@ -174,7 +174,11 @@ class Game:
 
     def get_player_move(self):
         move = int(input("Pick a spot to move: (1-9) "))
+        if(move == 0):
+          self.quit_game()
         while move not in [1,2,3,4,5,6,7,8,9] or not self.is_space_free(self.board,move-1) :
+            if(move==0):
+              self.quit_game()
             move = int(input("Invalid move. Please try again: (1-9) "))
         return move - 1
 
@@ -246,20 +250,16 @@ class Game:
        self.end_game()
 
     def end_game(self):
-       play_again = raw_input("Would you like to play again? (y/n): ").lower()
-       if play_again == 'y':
-           self.reinitialize() # necessary for re-initialization of the board etc
-           self.start_game()
-       else:
-           print "\n\t-- GAME OVER!!!--\n\t"
-           self.quit_game()
+      print "--------------------------------------------------------------------"
+      self.reinitialize()
+      self.start_game()
 
     def add_data(self):
       for i in range(0,len(self.bot_turns_current)):
         self.outputs.append([self.winner])
       print(self.outputs)
       self.bot_turns_overall = self.bot_turns_overall + self.bot_turns_current
-      print(self.bot_turns_overall)
+      #print(self.bot_turns_overall)
 
 #-----------------------------------------------------------------------------------
 
@@ -277,7 +277,7 @@ class Neural_Network(object):
         #Define Hyperparameters
         self.inputLayerSize = 10
         self.outputLayerSize = 1
-        self.hiddenLayerSize = 5
+        self.hiddenLayerSize = 20
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
