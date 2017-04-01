@@ -14,9 +14,15 @@ class Game:
         self.bot_name = 'TBot'
         self.bot_marker = ''
         self.turn = 0
-        self.bot_turns_overall=[]
+        self.bot_turns_overall2=[]
+        self.bot_turns_overall4=[]
+        self.bot_turns_overall6=[]
+        self.bot_turns_overall8=[]
         self.bot_turns_current=[]
-        self.outputs=[]
+        self.outputs2=[]
+        self.outputs4=[]
+        self.outputs6=[]
+        self.outputs8=[]
         self.numerical_board=[0,0,0,0,0,0,0,0,0]
         self.winning_combos = (
         [6, 7, 8], [3, 4, 5], [0, 1, 2], [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -24,11 +30,23 @@ class Game:
     )
         self.options=[0,1,2,3,4,5,6,7,8]
         self.middle = 4
-        self.neural = Neural_Network(Lambda=0.0001)
-        self.trainer = trainer(self.neural)
+        self.neural2 = Neural_Network(Lambda=0.0001)
+        self.trainer2 = trainer(self.neural2)
+        self.neural4 = Neural_Network(Lambda=0.0001)
+        self.trainer4 = trainer(self.neural4)
+        self.neural6 = Neural_Network(Lambda=0.0001)
+        self.trainer6 = trainer(self.neural6)
+        self.neural8 = Neural_Network(Lambda=0.0001)
+        self.trainer8 = trainer(self.neural8)
         self.winner = 0
-        self.testdatax=np.array(([1, 0, -1, 0, 1, -1, 0, 0, 0, 4],[-1,1,-1,0,1,0,-1,1,0, 4], [0,1,-1,1,0,1,0,-1,-1,6], [1,0,0,0,-1,0,0,0,0,2]), dtype=float)
-        self.testdatay=np.array(([-1],[1],[0],[1]), dtype=float)
+        self.testdatax2=np.array(([0, 0, 1, -1, 0, 0, 0, 0, 0],[0,0,0,0,0,0,1,-1,0], [1,0,0,0,0,0,0,0,-1], [0,1,0,0,0,-1,0,0,0]), dtype=float)
+        self.testdatay2=np.array(([0],[1],[0.5],[1]), dtype=float)
+        self.testdatax4=np.array(([1, 0, 0, -1, -1, 1, 0, 0, 0],[-1,1,0,-1,0,0,1,0,0], [-1,0,0,-1,1,0,1,0,0], [1,-1,-1,1,0,0,0,0,0]), dtype=float)
+        self.testdatay4=np.array(([0.5],[1],[1],[0]), dtype=float)
+        self.testdatax6=np.array(([0, -1, 0, 0, 1, 1, -1, 1, -1],[0,0,1,1,-1,-1,-1,0,1], [1,-1,0,0,1,0,-1,-1,0], [1,1,0,-1,-1,0,1,0,-1]), dtype=float)
+        self.testdatay6=np.array(([0.5],[0.5],[1],[0]), dtype=float)
+        self.testdatax8=np.array(([0, -1, -1, 1, -1, -1, 1, 1, 1],[1,-1,-1,1,1,-1,-1,1,0], [-1,1,1,1,-1,0,-1,-1,1], [1,-1,0,-1,1,1,-1,1,-1]), dtype=float)
+        self.testdatay8=np.array(([1],[0],[0.5],[0.5]), dtype=float)
 
         self.form = '''
            \t| %s | %s | %s |
@@ -61,9 +79,23 @@ class Game:
            \t-------------
            \t| %s | %s | %s |
            '''      
-        trainX = np.array(self.bot_turns_overall)
-        trainY = np.array(self.outputs)
-        self.trainer.train(trainX, trainY, self.testdatax, self.testdatay)
+        trainX2 = np.array(self.bot_turns_overall2)
+        trainY2 = np.array(self.outputs2)
+        self.trainer2.train(trainX2, trainY2, self.testdatax2, self.testdatay2)
+        if(len(self.bot_turns_overall4)>0):
+          trainX4 = np.array(self.bot_turns_overall4)
+          trainY4 = np.array(self.outputs4)
+          self.trainer4.train(trainX4, trainY4, self.testdatax4, self.testdatay4)
+        if(len(self.bot_turns_overall6)>0):
+          trainX6 = np.array(self.bot_turns_overall6)
+          trainY6 = np.array(self.outputs6)
+          self.trainer6.train(trainX6, trainY6, self.testdatax6, self.testdatay6)
+
+        if(len(self.bot_turns_overall8)>0):
+          trainX8 = np.array(self.bot_turns_overall8)
+          trainY8 = np.array(self.outputs8)
+          self.trainer8.train(trainX8, trainY8, self.testdatax8, self.testdatay8)
+
                  
 
     def print_board(self,board = None):
@@ -124,9 +156,15 @@ class Game:
           if(self.is_space_free(self.board, i)):
             tempnumboard = self.numerical_board[:]
             tempnumboard[i] = 1
-            tempnumboard=tempnumboard+[self.turn]
             tempnparray=np.array(tempnumboard)
-            tempval = self.neural.forward(tempnparray)
+            if(self.turn==2):
+              tempval = self.neural2.forward(tempnparray)
+            elif(self.turn==4):
+              tempval = self.neural4.forward(tempnparray)
+            elif(self.turn==6):
+              tempval = self.neural6.forward(tempnparray)
+            elif(self.turn==8):
+              tempval = self.neural8.forward(tempnparray)
             print tempval
             if(max<tempval):
               max = tempval
@@ -200,14 +238,14 @@ class Game:
                if(self.is_winner(self.board, self.player_marker)):
                    self.print_board()
                    print "\n\tCONGRATULATIONS %s, YOU HAVE WON THE GAME!!! \\tn"
-                   self.winner = -1
+                   self.winner = 0
                    is_running = False
                    #break
                else:
                    if self.is_board_full():
                        self.print_board()
                        print "\n\t-- Match Draw --\t\n"
-                       self.winner = 0
+                       self.winner = 0.5
                        is_running = False
                        #break
                    else:
@@ -220,7 +258,7 @@ class Game:
               print self.numerical_board
               print(bot_move)
               self.numerical_board[bot_move]=1
-              nextelement = self.numerical_board + [self.turn]
+              nextelement = self.numerical_board[:]
               print self.numerical_board
               #print(nextelement)
               self.bot_turns_current.append(nextelement)
@@ -236,7 +274,7 @@ class Game:
                   if self.is_board_full():
                       self.print_board()
                       print "\n\t -- Match Draw -- \n\t"
-                      self.winner = 0
+                      self.winner = 0.5
                       is_running = False
                       #break
                   else:
@@ -256,9 +294,26 @@ class Game:
 
     def add_data(self):
       for i in range(0,len(self.bot_turns_current)):
-        self.outputs.append([self.winner])
-      print(self.outputs)
-      self.bot_turns_overall = self.bot_turns_overall + self.bot_turns_current
+        if(i==0):
+          self.outputs2.append([self.winner])
+          self.bot_turns_overall2.append(self.bot_turns_current[i])
+          print self.outputs2
+          print self.bot_turns_overall2
+        elif(i==1):
+          self.outputs4.append([self.winner])
+          self.bot_turns_overall4.append(self.bot_turns_current[i])
+          print self.outputs4
+          print self.bot_turns_overall4
+        elif(i==2):
+          self.outputs6.append([self.winner])
+          self.bot_turns_overall6.append(self.bot_turns_current[i])
+          print self.outputs6
+          print self.bot_turns_overall6
+        elif(i==3):
+          self.outputs8.append([self.winner])
+          self.bot_turns_overall8.append(self.bot_turns_current[i])
+          print self.outputs8
+          print self.bot_turns_overall8
       #print(self.bot_turns_overall)
 
 #-----------------------------------------------------------------------------------
@@ -275,7 +330,7 @@ y = y/100
 class Neural_Network(object):
     def __init__(self, Lambda=0):        
         #Define Hyperparameters
-        self.inputLayerSize = 10
+        self.inputLayerSize = 9
         self.outputLayerSize = 1
         self.hiddenLayerSize = 20
         
